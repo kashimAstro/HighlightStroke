@@ -1,0 +1,26 @@
+#extension GL_ARB_texture_rectangle:enable
+
+#define AMPLIFER 6.0
+uniform sampler2DRect texture;
+uniform float time;       /* no */
+uniform vec3  resolution; /* no */
+uniform float param;
+uniform float summs;
+
+vec4 getPixel(in int x, in int y) { return texture2DRect(texture, (gl_TexCoord[0].xy+vec2(x,y)) ); }
+
+void main(void) {
+	vec4 sum = abs(getPixel(0, 1) - getPixel(0, -1));
+	sum += abs(getPixel(1, 0) - getPixel(-1, 0));
+	sum /= summs;
+	vec4 color = getPixel(0, 0);
+
+	if(param == 1.0)
+		color.r += length(sum) * AMPLIFER;/*red*/
+	if(param == 2.0)
+		color.g += length(sum) * AMPLIFER;/*green*/
+	if(param == 3.0)
+		color.b += length(sum) * AMPLIFER;/*blue*/
+
+	gl_FragColor = color;
+}
